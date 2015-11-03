@@ -1,0 +1,29 @@
+@UTF-8
+a:link {color:#0000FF;}
+a:visited {color:#0000FF;}
+a:hover {color:#ff5e00;text-decoration:underline;}
+a:active {color:#0000FF;}
+@font-face {
+font-family: "WhiteboardRegular";
+font-style: normal;
+font-weight: normal;
+src: local("☺"), url("./images/house-webfont.woff") format("woff"), url("./images/house-webfont.ttf") format("truetype"), url("./images/house-webfont.svg#webfontkaPhwzaZ") format("svg");
+}
+body{font-family:"WhiteboardRegular";}
+#main{
+width:1100px;
+padding:10px;
+margin: 0px auto;
+}
+.hide{display:none;}
+#source {width: 480px; height: 280px;}
+#target {width: 480px; height: 280px; margin-left: 5px;}
+#rulesArea {width: 680px; float: left; margin-bottom: 80px;}
+#backupArea {width: 320px; float: left;}
+#backup { width: 290px; height: 480px;}
+.from, .to {width: 250px;height:60px;}
+.functionArea {display:none;margin-top:0px;background-color:#EEE;}
+.functionArea a {text-decoration:none;}
+#rules{padding:0px;margin:0px;}
+.rules{list-style:none;}
+#infos{font-weight:bold;}

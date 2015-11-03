@@ -1,0 +1,149 @@
+{
+/*
+ * Input例：
+(1)こんにちは
+(2)Hello
+(5)Hello
+(6)Hello
+(100)Hello(101)Hello
+(102)Hello
+
+ */
+"bracket_Num_Plus_1":
+{"0":{"from":"^","to":"function (w){\n  L = '(';\n  R = ')';\n  return w;\n}","ignore":false,"multiline":false},"1":{"from":"\\([0-9]+?\\)","to":"function (w,i){\n  console.log(w);\n  return L + (\n    parseInt(w.replace(L,'').replace(R,''),10)  +  1\n  ) + R;\n}","ignore":false,"multiline":false}}
+,
+/*
+Copy resources path from eclipse(修飾名のコピー) , then change it to backup commands（for diff）
+Input examples:
+/Test.Java/src/utils/TestCal.java
+/Test.Java/src/utils/TestJapanese.java
+*/
+
+"Eclipse_Call_Hierarchy" : 
+{"0":{"from":"(.+)","to":"function (w,i){\n  // Get Max tabs number\n  var tabs_matches = w.match(/^\\t*/);\n  var tabs = [\"\"];\n  if (! (tabs_matches == null || tabs_matches.length==0) )\n    tabs = tabs_matches[0];\n\n  ROOT_NUM = 1;\n  \n  if (typeof COUNT==\"undefined\")\n     COUNT = tabs.length;\n  if (COUNT < tabs.length)\n     COUNT = tabs.length;\n  \n  return w;\n}\n","ignore":false,"multiline":false},"1":{"from":"(.+)","to":"function (w,i){\n  // Get Max tabs number\n  var tabs_matches = w.match(/^\\t*/);\n  var tabs = [\"\"];\n  if (! (tabs_matches == null || tabs_matches.length==0) )\n    tabs = tabs_matches[0];\n\n  var sub_tabs = \"\";\n  for (var i=0; i<COUNT-tabs.length;i++)\n    sub_tabs += \"\\t\";\n  \n  if (tabs.length==0) {\n  \tw = w.replace(/^(\\t*)/,ROOT_NUM+\"\\t$1■\\t\"+sub_tabs);\n    ROOT_NUM++;\n  }\n  else {\n    w = w.replace(/^(\\t*)/,\"\\t$1■\\t\"+sub_tabs);\n  }\n  \n  return w;\n}\n","ignore":false,"multiline":false}}
+,
+
+
+
+"copyByEclipsePath" : 
+{"0":{"from":"^","to":"set tmp=tmp\nmkdir %tmp%_bef\nmkdir %tmp%_aft\n"},"1":{"from":"/","to":"\\"},"2":{"from":"\\n\\\\(.+)","to":"\ncopy \"D:\\eclipse\\workspace\\head_$1\" %tmp%_bef\ncopy \"D:\\eclipse\\workspace\\$1\" %tmp%_aft"},"3":{"from":"","to":""}}
+,
+
+
+/*
+自動的にソートになる（sortコマンド利用）
+やることは：
+a	b
+a	c
+⇒
+a	b、c
+*/
+"groupByFirstKey" : 
+{"0":{"from":"^","to":"function(w){\n  \n  // Define sort rules for str\n  STR_SORT_RULES=function(a,b){\n      return a > b;\n  };\n\n  // Define sort rules for str\n  NUM_SORT_RULES=function(a,b){\n      //console.log(typeof a + \"|\" + typeof b);\n \t  if (a.isNumber() && b.isNumber())\n      \treturn parseFloat(a) > parseFloat(b);\n      else \n        return a > b\n  };\n\n  \n  return w;\n}","ignore":false,"multiline":false},"1":{"from":"$","to":"\n","ignore":false,"multiline":false},"2":{"from":"^(.*\\n)*$","to":"function (w,i){\n  return w.split(\"\\n\").sort(NUM_SORT_RULES).join(\"\\n\");\n}","ignore":false,"multiline":false},"3":{"from":"^\n","to":"","ignore":false,"multiline":false}
+	,
+"4":{"from":"^","to":"function (w,i){\nlastKey=\"\";\nreturn w;}","ignore":false,"multiline":false},"5":{"from":".*\n","to":"function (w,i){\n  \tvar list=w.split(\"\\t\");\n\tkey=list[0];\n  \n    if (key==lastKey) {\n      \n      return \"★\"+list[1]\n    }\n  \tlastKey=key;\n    return w\n}","ignore":false,"multiline":false},"6":{"from":"\n★","to":"、","ignore":false,"multiline":false}}
+,
+
+
+/*
+1) Tree コマンドで出力結果を取得
+2) 下記のScript利用し、変換する
+C:.
+│  mmm__java_wallpaper_by_Therppa.png
+│  
+└─Logicool Webcam
+    ├─bck
+    │  │  Picture 62.jpg
+    │  └─Picture 63.jpg
+    │
+    └─本番リリース前（未連動）
+            Picture 363.jpg
+
+⇒①
+mmm__java_wallpaper_by_Therppa.png
+Logicool Webcam
+	bck
+		Picture 62.jpg
+		Picture 63.jpg
+	本番リリース前（未連動）
+		Picture 363.jpg
+
+変換：
+                                     → <ul>
+mmm__java_wallpaper_by_Therppa.png   ⇒ <li>mmm__java_wallpaper_by_Therppa.png</li>
+Logicool Webcam                      ⇒ <li>Logicool Webcam<ul>
+	bck                          ⇒ 	<li>bck<ul>
+		Picture 62.jpg       ⇒ 		<li>Picture 62.jpg</li>
+		Picture 63.jpg       ⇒ 		<li>Picture 63.jpg</li></ul></li>
+	本番リリース前（未連動）     ⇒ 	<li>本番リリース前（未連動）<ul>
+		Picture 363.jpg      ⇒ 		<li>Picture 363.jpg</li></ul></li></ul></li>
+                                     → </ul>
+*/
+"CMD-Tree2Ul_Li":
+{"0":{"from":"^.*\n.*\n.*\n|$","to":"\n"},"1":{"from":"│|└|─|└|├","to":"  "},"2":{"from":"\n    |(\n)+","to":"\n"},"3":{"from":"\n( )*\n","to":"\n"},"4":{"from":"    ","to":"\t"},"5":{"from":"^\n","to":""},"6":{"from":"(.*\\n)+","to":"function (w,i){\n// ライブラリ\nArray.prototype.head = function(){ return this[0]; };\nArray.prototype.tail = function(){ return this.slice(1); };\nArray.prototype.init = function(){ return this.slice(0,this.length-1); };\nArray.prototype.last = function(){ return this[this.length-1]; };\nString.prototype.countString = function(key){\n\tvar strlength=key.length,ans=0,i=0;\n\twhile((i=this.indexOf(key,i)) != -1){\n\t\ti+=strlength;\t//この行は目的によってはi++;を使う\n\t\tans++;\n\t}\n\treturn ans;\n}\n\nvar result = \"<ul>\";\nfunction GetHtml(lines, deep){\n\t// 最後の行、必ず空\n\tif (lines.length==1 && deep==0) {\n\t\treturn \"\";\n\t}\n\n\t// 次行のDeep取得(Tab数取得)\n\tvar nextDeep = lines[1].countString(\"\t\");\n\tif (nextDeep > deep){\n\t\treturn \"<li>\" + lines[0] + \"<ul>\" + GetHtml(lines.tail(), nextDeep);\n\t} else\n\tif (nextDeep < deep){\n\t\t// Endタグを数える\n\t\tvar endUlLiTags = \"\";\n\t\tfor (var i=0;i<deep-nextDeep;i++) endUlLiTags += \"</ul></li>\";\n\t\treturn \"<li>\" + lines[0]  + \"</li>\" + endUlLiTags + GetHtml(lines.tail(), nextDeep);\n\t} else\n\tif (nextDeep == deep){\n\t\treturn \"<li>\"+lines[0]+\"</li>\" + GetHtml(lines.tail(), nextDeep);\n\t}\n}\nresult += GetHtml(w.split(\"\\n\"), 0);\nresult += \"</ul>\";\n\nreturn result;\n}"},"7":{"from":"\\t","to":""},"8":{"from":".+","to":"function (w,i){\n$(\"#htmlresult\").remove();\n$(\"<div id='htmlresult' />\").css(\"clear\",\"both\").append(\"<hr />\").append(w).appendTo(\"body\");\nreturn w;}"}}
+,
+
+/*
+Get bytes form input
+*/
+getBytes:
+{"0":{"from":"(.+)","to":"function (w,i){\n\n\n/****************************************************************\n* 全角/半角文字判定\n*\n* 引数 ： str チェックする文字列\n* flg 0:半角文字、1:全角文字\n* 戻り値： true:含まれている、false:含まれていない \n*\n****************************************************************/\nfunction GetBytes(str) {\n    var length = 0;\n    for (var i = 0; i < str.length; i++) {\n        var c = str.charCodeAt(i);\n        // Shift_JIS: 0x0 ～ 0x80, 0xa0 , 0xa1 ～ 0xdf , 0xfd ～ 0xff\n        // Unicode : 0x0 ～ 0x80, 0xf8f0, 0xff61 ～ 0xff9f, 0xf8f1 ～ 0xf8f3\n        if ( (c >= 0x0 && c < 0x81) || (c == 0xf8f0) || (c >= 0xff61 && c < 0xffa0) || (c >= 0xf8f1 && c < 0xf8f4)) {\n            length += 1;\n        } else {\n            length += 2;\n        }\n    }\n    return length;\n}\n        \n\n\n\n\n\n\n\nreturn GetBytes(w);\n}"}}
+,
+
+
+
+
+/*
+
+使い方：
+Excelにある地域をCopyし、FromにPasteした後に、ルールを適用し、枠あるように変換する。
+※改行がサポートしていない。
+
+日本語2	日本語
+eng	english
+
+
+⇒
+┏━━━━┯━━━━┓
+┃ 日本語2│  日本語┃
+┠────┼────┨
+┃     eng│ english┃
+┗━━━━┷━━━━┛
+
+
+
+*/
+excelToText:
+{"0":{"from":"\t","to":"│","ignore":false,"multiline":false},"1":{"from":"^","to":"function (w,i){\n// Global var define\nallLines=[];\nmaxLength=0;\nmaxRecords=[];\npaintline = function (head,connectLine,splitLine,tail){\n  var str = [];\n  for (var t=0;t<maxRecords.length;t++) {\n    //var blockNum = parseInt( (maxRecords[t].getBytes().length + 1 )/2, 10 );\n    str[t] = \"\".lpadByBytes(connectLine,maxRecords[t].getBytes().length);\n  }\n  return head + str.join(splitLine)+tail;\n}\n\nString.prototype.lpadByBytes = function(padString, length) {\n  var str = this;\n  while (str.getBytes().length < length)\n        str = padString + str;\n  return str;\n}\nsetMaxLength = function (){\n  for (var i=0;i<maxRecords.length;i++) {\n    if (maxRecords[i].getBytes().length %2 != 0){\n           maxRecords[i] = maxRecords[i] + \" \"; // to 2 % = 0\n    }\n  }\n  maxLength = maxRecords.join(\"│\").getBytes().length; \n  console.log(\"maxlength reset to \" + maxLength)\n}\nreturn w;}","ignore":false,"multiline":false},"2":{"from":".+","to":"function (w,i){\nconsole.log(\"==\"+w.getBytes().length + \"|\"+ maxLength);\n// Tmp max , it may changed when [maxRecords splited item length < other records splited item length]\nvar strBytes = w.getBytes().length;\nif ( strBytes > maxLength) {\n  maxRecords = w.split(\"│\");\n  setMaxLength();\n\n}\n\nreturn w;}","ignore":false,"multiline":false},"3":{"from":".+","to":"function (w,i){\n\n// true max \nvar thisRecords = w.split(\"│\");\nfor (var i=0;i<maxRecords.length;i++) {\n    if ( thisRecords[i].getBytes().length > maxRecords[i].getBytes().length ) {\n       maxRecords[i] = thisRecords[i];\n       setMaxLength();\n    }\n}\n\nreturn w;\n\n}","ignore":false,"multiline":false},"4":{"from":".+","to":"function (w,i){\n//console.log(\"==\"+w.getBytes().length + \"|\"+ maxLength);\n\n// lpad\nif (w.getBytes().length <= maxLength) {\n  var thisRecords = w.split(\"│\");\n  for (var i=0;i<maxRecords.length;i++) {\n\n    if ( thisRecords[i].getBytes().length < maxRecords[i].getBytes().length ) {\n       thisRecords[i] = thisRecords[i].lpadByBytes(\" \",maxRecords[i].getBytes().length);\n       console.log(thisRecords[i]+thisRecords[i].getBytes().length +\"|\"+ maxRecords[i]+maxRecords[i].getBytes().length);\n\n    }\n  }\n  w = thisRecords.join(\"│\");\n}\n\n// save all text \nallLines.push(\"┃\"+w+\"┃\");\n\n// clear all text\nreturn \"\";\n\n}","ignore":false,"multiline":false},"5":{"from":"^","to":"function (w,i){\n// head+splitline+tail\nreturn ( \npaintline(\"┏\",\"━\",\"┯\",\"┓\"+\"\\n\") + \nallLines.join(\"\\n\"+paintline(\"┠\",\"─\",\"┼\",\"┨\")+\"\\n\") +\npaintline(\"\\n\"+\"┗\",\"━\",\"┷\",\"┛\")\n);\n\n}","ignore":false,"multiline":false}}
+,
+
+
+
+/*
+1) \d in postgres
+2) Use this script
+ public | acb_buy_dtimem                    | table | postgres
+
+⇒
+
+truncate acb_buy_dtimem;
+*/
+fromDBListToTruncate:
+{"0":{"from":"\n.+sequence.*\n","to":"\n"},"1":{"from":"public \\| ([a-z0-9_]+) .+","to":"truncate $1;"},"2":{"from":"\n ","to":"\n"},"3":{"from":"^[^t^\\n].+|\\n[^t].+","to":""}}
+,
+
+
+"reverse":
+{"0":{"from":"^(.*\\n?)*$","to":"function (w,i){\nreturn w.split(\"\\n\").reverse().join(\"\\n\");\n\n}","ignore":false,"multiline":false}}
+,
+
+"sort":
+{"0":{"from":"^","to":"function(w){\n\n  // Define sort rules for str\n  NUM_OR_STR_SORT_RULES=function(a,b){\n      //console.log(typeof a + \"|\" + typeof b);\n \t  if (a.isNumber() && b.isNumber())\n      \treturn parseFloat(a) > parseFloat(b);\n      else \n        return a > b;\n  };\n\n  \n  return w;\n}","ignore":false,"multiline":false},"1":{"from":"^(.*\\n?)*$","to":"function (w,i){\n  return w.split(\"\\n\").sort(NUM_OR_STR_SORT_RULES).join(\"\\n\");\n}","ignore":false,"multiline":false},"2":{"from":"^\n","to":"","ignore":false,"multiline":false}}
+,
+
+"tmp":
+{0:{from:".*\\\\output\\\\.*\n|.*\\\\test\\\\.*\n|.*\\\\stub\\\\.*\n|.*import.*\n|.*\\\\stub.*\\\\.*\n|.*: *//.*\n|.*test-java.*\n|.*test_java.*\n|.*_test.*\n|.*-test.*\n",to:"",ignore:false,multiline:false},1:{from:".*static[^=\\n]+\\(.*\n|.*static {\n|.*static{\n",to:"",ignore:false,multiline:false},2:{from:".*final.* int .*=.*\n|.*final.* char .*=.*\n|.*final.* Integer .*=.*\n|.*final.* boolean .*=.*\n|.*final.* Boolean .*=.*\n|.*final.* String .*=.*\n|.*final.* long .*=.*\n|.*final.* Long .*=.*\n|.*final.* BigDecimal .*=.*\n",to:"",ignore:false,multiline:false},3:{from:".* int .*final.*=.*\n|.* char .*final.*=.*\n|.* Integer *final.*=.*\n|.* boolean .*final.*=.*\n|.* Boolean .*final.*=.*\n|.* String .*final.*=.*\n|.* long .*final.*=.*\n|.* Long .*final.*=.*\n|.* BigDecimal .*final.*=.*\n",to:"",ignore:false,multiline:false},4:{from:".*final Def.*\n|.*final Key.*\n|.*final Column.*\n|.*final Logger.*\n|.*final ThreadLocal.*\n",to:"",ignore:false,multiline:false},5:{from:".*static.*IField.*\n|.*static.*IDecisionTree.*\n|.*static enum.*\n|.*IMatchingProcedure.*\n|.*ILayout.*\n",to:"",ignore:false,multiline:false},6:{from:".*final.*GIVEN.*\n|.*final ResultCode.*\n|.*final DetailCode.*\n|.*final CmnResult.*\n|.*final Names.*\n",to:"",ignore:false,multiline:false},7:{from:".* class .*\n|.* interface .*\n",to:"",ignore:false,multiline:false},8:{from:"^",to:"function (w,i){\n  ALL_FINALS=\"\";\n  return \"\";\n}",ignore:false,multiline:false},9:{from:".*final.*\n",to:"function (w,i){\n  ALL_FINALS+=w;\n  return \"\";\n}",ignore:false,multiline:false},10:{from:"$",to:"function (w,i){\nreturn ALL_FINALS;\n}",ignore:false,multiline:false}}
+,
+
+
+}

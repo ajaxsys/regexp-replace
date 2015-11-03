@@ -1,0 +1,112 @@
+<!doctype html>
+<html><head> 
+<!--
+ *  Author : 方 javaeecoding (at) gmail.com
+  -->
+<title>Regex replace</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="../jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="../jquery.simpledialog.js"></script>
+<script type="text/javascript" src="../my.jsutil.js"></script>
+<!--CodeMirror: JavaScript mode-->
+<link rel="stylesheet" type="text/css" href="CodeMirror.css">
+<script type="text/javascript" src="CodeMirror.js"></script>
+<script type="text/javascript" src="CodeMirror4js.js"></script>
+<!--this page-->
+<script type="text/javascript" src="regex.js"></script>
+<link rel="stylesheet" type="text/css" href="regex.css">
+</head>
+
+<body> 
+
+<div id="main">
+
+<form action="javascript:void(0);" id="regexChangeForms">
+	<textarea wrap="off" id="source" accesskey="f">AA
+BB
+CC
+DD
+</textarea>
+	<textarea wrap="off" id="target" accesskey="t" readonly="readonly"></textarea>
+	<br>
+	<input id="applyRegex" value="Apply regex(G)" accesskey="g" type="submit">
+	<input id="addRules" value="Add rules(A)" accesskey="a" type="button">
+	<input id="saveRules" value="Save rules(S)" accesskey="s" type="button">
+	<input id="restoreRules" value="Restore rules(R)" accesskey="r" type="button">
+	<a href="javascript:void(0)" id="tryRegexLink">Regex Finder</a>
+	<span id="infos"></span>
+	<br>
+
+	<div id="rulesArea">
+		※ [From] Can use as multiline. Make sure it is a REGEX format<br>
+		※ [To] is NOT regex format, but use <label title=" $ number - Substitutes the substring matched by group number.&#13;&#10; $&           - Substitutes a copy of the whole match.&#13;&#10; $`           - Substitutes all the text of the input string before the match.&#13;&#10; $'            - Substitutes all the text of the input string after the match.&#13;&#10; $+           - Substitutes the last group that was captured.&#13;&#10; $_            - (IE Only)Substitutes the entire input string.&#13;&#10; ${name}   - (IE Only)Substitutes the substring matched by the named group name (?<name>).&#13;&#10;">`substitution`</label> for replace [From].<br><!-- http://msdn.microsoft.com/en-us/library/az24scfc.aspx -->
+		※ [To] Can use as a function. Example: <label style="background-color:lightgray" title="Drag & Drop" id="ruleSample">function (w,i){return w.toLowerCase();}</label><br>
+
+		<ul id="rules">
+			<li class="rules">
+				<span class="functionSwitch">☄</span>
+				From :
+				<textarea class="from"></textarea>
+				To : 
+				<textarea class="to"></textarea>
+				<div class="functionArea">
+					<a href="javascript:void(0);" class="del">del</a>
+					<label title="ignore case"><input class="ignore" type="checkbox" />i</label>
+					<label title="enable ^ and $ in each line"><input class="multiline" type="checkbox" />m</label> 
+					<a href="javascript:void(0);" class="up"> ↑ </a> 
+					<a href="javascript:void(0);" class="down"> ↓ </a>
+					<label> Copy: </label>
+					<a href="javascript:void(0);" class="copy_and_up_case"> up </a>
+					<a href="javascript:void(0);" class="copy_and_low_case"> low </a>
+					<a href="javascript:void(0);" class="copy_and_cap"> cap </a>
+					<a href="javascript:void(0);" class="copy_and_camel"> camel </a>
+				</div>
+			</li>
+		</ul>
+	</div>
+
+	<div id="backupArea">
+		※<u title="use [Shift+Alt+B] in firefox, else with [Alt+B]">B</u>ackup your rules. <br />
+		Rule Name:<input id="ruleName" accesskey="b" ><br />
+		<div id="rules_div"></div>
+		<input value="search" id="search" type="button" accesskey="k" />
+		<input id="list" value="list" type="button" accesskey="l"  />
+		<input id="save" value="save" type="button" accesskey="m"  />
+		<input id="delete" value="del" type="button" accesskey="n" /><br />
+		<textarea wrap="off" id="backup"></textarea>
+	</div>
+</form>
+</div><!--End of container-->
+
+<!--CodeMirror: JavaScript mode-->
+<div id="jseditor" class="hide">
+	※ Press ESC to return edited value.
+	<hr/>
+	<textarea id="code" name="code"></textarea>
+</div>
+
+<!--Test Regex-->
+<form id="tryRegexArea" class="hide" action="javascript:void(0)">
+	<p>
+	String: <textarea id="trInput" style="height:44px;width: 400px;">This is a test of the JavaScript RegExp object.
+This is a test of the JavaScript RegExp object</textarea> <br />
+	Regex: <input id="trRegex" type="TEXT" size="42" value="\bt[a-z]+\b" />
+	<label title="ignore case"><input id="trIgnore" type="checkbox" checked="checked" />i</label>
+	<label title="global search"><input id="trGlobal" type="checkbox" checked="checked" />g</label>
+	<label title="multiline: enable ^ and $ in each line"><input id="trMultiline" type="checkbox" checked="checked" />m</label>
+	<input type="submit" value="go" />
+	<input type="button" id="trGoKeep" value="go&KeepCRLF" />
+	</p><hr />
+	1. <b>Re.test(Str):  </b> Test only. ※ lastIndex changed. <br />
+		<span id="trTestResult"></span><br />
+	2. <b>Re.exec(Str):  </b> Exec one by one. ※  lastIndex changed. <a id="trGetRowText" href="javascript:void(0)">Show Detail</a><br />
+		<span id="trExecResult"></span><br />
+	3. <b>Str.match(re): </b> Match all  <br />
+		<span id="trIsMatched"></span><br />
+	4. <b>Str.replace(re, s): </b> Visual result <a id="trHideNonHighlight" href="javascript:void(0)">Hide Detail</a>  <br />
+		<div><pre id="trVisualResult" style=""></pre></div>
+</form>
+
+
+
+</body></html>

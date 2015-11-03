@@ -38,9 +38,10 @@ DD
 	<br>
 
 	<div id="rulesArea">
-		※ [From] Can use as multiline. Make sure it is a REGEX format<br>
-		※ [To] is NOT regex format, but use <label title=" $ number - Substitutes the substring matched by group number.&#13;&#10; $&           - Substitutes a copy of the whole match.&#13;&#10; $`           - Substitutes all the text of the input string before the match.&#13;&#10; $'            - Substitutes all the text of the input string after the match.&#13;&#10; $+           - Substitutes the last group that was captured.&#13;&#10; $_            - (IE Only)Substitutes the entire input string.&#13;&#10; ${name}   - (IE Only)Substitutes the substring matched by the named group name (?<name>).&#13;&#10;">`substitution`</label> for replace [From].<br><!-- http://msdn.microsoft.com/en-us/library/az24scfc.aspx -->
-		※ [To] Can use as a function. Example: <label style="background-color:lightgray" title="Drag & Drop" id="ruleSample">function (w,i){return w.toLowerCase();}</label><br>
+		※ [From] Support multiline. Make sure it is a REGEXP string<br>
+		※ <label title=" $ number - Substitutes the substring matched by group number.&#13;&#10; $&           - Substitutes a copy of the whole match.&#13;&#10; $`           - Substitutes all the text of the input string before the match.&#13;&#10; $'            - Substitutes all the text of the input string after the match.&#13;&#10; $+           - Substitutes the last group that was captured.&#13;&#10; $_            - (IE Only)Substitutes the entire input string.&#13;&#10; ${name}   - (IE Only)Substitutes the substring matched by the named group name (?<name>).&#13;&#10;">[To] is NOT regexp (mouse over for detail).</label>
+		<!-- http://msdn.microsoft.com/en-us/library/az24scfc.aspx -->
+		It can be a function too, e.g: <label style="background-color:lightgray" title="Drag & Drop" id="ruleSample">function (w,i){return w.toLowerCase();}</label><br>
 
 		<ul id="rules">
 			<li class="rules">
